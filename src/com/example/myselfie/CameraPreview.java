@@ -28,7 +28,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 	
 		private Camera mCamera = null;
 
-	    
+
 	    SurfaceHolder mHolder;
 	    int mPreviewState = K_STATE_PREVIEW;
 	    
@@ -37,20 +37,20 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 	    //Size mPreviewSize;
 	    //List<Size> mSupportedPreviewSizes;
 	    
-	    @SuppressWarnings("deprecation")
+
 		CameraPreview(Context context, Camera camera) {
 	        super(context);
-	       
+	
 	        mCamera = camera;
 	        // Install a SurfaceHolder.Callback so we get notified when the
 	        // underlying surface is created and destroyed.
 	        mHolder = getHolder();
 	        mHolder.addCallback(this);
-	        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)
-	        	mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+	        
+	      
 	    }
 	    
-	    @SuppressWarnings("deprecation")
+
 	    public CameraPreview(Context context, AttributeSet attr) {
 	        super(context, attr);
 	       
@@ -59,8 +59,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 	        // underlying surface is created and destroyed.
 	        mHolder =getHolder();
 	        mHolder.addCallback(this);
-	        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)
-	        	mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+	        
 	    }
 
 		@Override
@@ -126,6 +125,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		        mCamera.setPreviewDisplay(mHolder);          
 		        mCamera.startPreview();
 		        isPreviewRunning = true;
+		       
 		    }
 		    catch(Exception e)
 		    {
@@ -255,10 +255,12 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		        } catch (IOException e) {
 		            e.printStackTrace();
 		        }
-		      
+		        FaceDetector faceDetector = new FaceDetector();
+		        mCamera.setFaceDetectionListener(faceDetector);
 		        // Important: Call startPreview() to start updating the preview
 		        // surface. Preview must be started before you can take a picture.
 		        mCamera.startPreview();
+		        mCamera.startFaceDetection();
 		    }
 		}
 		
