@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
@@ -27,7 +28,10 @@ public class MainActivity extends Activity {
         // and set it as the content of our activity.
         // mPreview = new Preview(this);
         setContentView(R.layout.activity_main);
-        mPreview = (CameraPreview) findViewById(R.id.surface_view);
+        openBackCamera();
+        mPreview = new CameraPreview(this, mCamera);
+        FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
+        preview.addView(mPreview);
         
     }
 
@@ -46,6 +50,7 @@ public class MainActivity extends Activity {
         try {
             releaseCameraAndPreview();
             mCamera = Camera.open(id);
+            CameraPreview.setCameraDisplayOrientation((Activity) this, id, mCamera);
             qOpened = (mCamera != null);
         } catch (Exception e) {
             Log.e(getString(R.string.app_name), "failed to open Camera");
@@ -68,12 +73,26 @@ public class MainActivity extends Activity {
     	// TODO Auto-generated method stub
     	super.onResume();
     	//mPreview = new CameraPreview(this.getApplicationContext());
-        int nCameras = Camera.getNumberOfCameras();
-        Toast.makeText(this.getApplicationContext(), "Number of cameras: "+nCameras, Toast.LENGTH_LONG).show();
-        safeCameraOpen(nCameras-1);
+       
+        openBackCamera();
+        
         mPreview.setCamera(mCamera);
     }
     
+    private void openBackCamera()
+    {
+    	 Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
+    	 int nCameras = Camera.getNumberOfCameras();
+    	 Toast.makeText(this.getApplicationContext(), "Number of cameras: "+nCameras, Toast.LENGTH_LONG).show();
+    	 
+    	 for(int id=0; id<nCameras; id++)
+    	 {
+    		 Camera.getCameraInfo(id, cameraInfo);
+    	        if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_BACK)
+    	        	safeCameraOpen(id);
+    	 }
+         
+    }
     @Override
     protected void onPause() {
         super.onPause();

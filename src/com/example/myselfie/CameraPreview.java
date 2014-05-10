@@ -3,6 +3,7 @@ package com.example.myselfie;
 import java.io.IOException;
 import java.util.List;
 
+import android.app.Activity;
 import android.content.Context;
 import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
@@ -18,7 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
-public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
+public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
 	
 		public static final int K_STATE_PREVIEW = 0;
 		public static final int K_STATE_FROZEN = 1;
@@ -27,7 +28,7 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
 	
 		private Camera mCamera = null;
 
-	    SurfaceView mSurfaceView;
+	    
 	    SurfaceHolder mHolder;
 	    int mPreviewState = K_STATE_PREVIEW;
 	    
@@ -37,14 +38,13 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
 	    //List<Size> mSupportedPreviewSizes;
 	    
 	    @SuppressWarnings("deprecation")
-		CameraPreview(Context context) {
+		CameraPreview(Context context, Camera camera) {
 	        super(context);
-	        mSurfaceView = new SurfaceView(context);
-	        addView(mSurfaceView);
-
+	       
+	        mCamera = camera;
 	        // Install a SurfaceHolder.Callback so we get notified when the
 	        // underlying surface is created and destroyed.
-	        mHolder = mSurfaceView.getHolder();
+	        mHolder = getHolder();
 	        mHolder.addCallback(this);
 	        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)
 	        	mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
@@ -53,12 +53,11 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
 	    @SuppressWarnings("deprecation")
 	    public CameraPreview(Context context, AttributeSet attr) {
 	        super(context, attr);
-	        mSurfaceView = new SurfaceView(context);
-	        addView(mSurfaceView);
+	       
 
 	        // Install a SurfaceHolder.Callback so we get notified when the
 	        // underlying surface is created and destroyed.
-	        mHolder = mSurfaceView.getHolder();
+	        mHolder =getHolder();
 	        mHolder.addCallback(this);
 	        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)
 	        	mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
@@ -73,10 +72,13 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
 	        {
 	            mCamera.stopPreview();
 	        }
-
-	        Parameters parameters = mCamera.getParameters();
+			previewCamera();
+			
+			/*
+	        Camera.Parameters parameters = mCamera.getParameters();
 	        Display display = ((WindowManager)getContext().getSystemService("window")).getDefaultDisplay();
-
+	        
+	        
 	        if(display.getRotation() == Surface.ROTATION_0)
 	        {
 	            parameters.setPreviewSize(height, width);                           
@@ -101,7 +103,7 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
 
 	        mCamera.setParameters(parameters);
 	        previewCamera();                 
-	        
+	        */
 			/*
 			// Now that the size is known, set up the camera parameters and begin
 	        // the preview.
@@ -247,7 +249,7 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
 		        //List<Size> localSizes = mCamera.getParameters().getSupportedPreviewSizes();
 		        //mSupportedPreviewSizes = localSizes;
 		        requestLayout();
-		        /*
+		        
 		        try {
 		        	mCamera.setPreviewDisplay(mHolder);
 		        } catch (IOException e) {
@@ -256,7 +258,7 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
 		      
 		        // Important: Call startPreview() to start updating the preview
 		        // surface. Preview must be started before you can take a picture.
-		        mCamera.startPreview();*/
+		        mCamera.startPreview();
 		    }
 		}
 		
@@ -308,30 +310,29 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
 	        mCamera.startPreview();
 	    }
 
-		@Override
-		protected void onLayout(boolean changed, int l, int t, int r, int b) {
-			if (changed && getChildCount() > 0) {
-	            final View child = getChildAt(0);
-	            
-	            child.layout(l, t, r, b);
-	            
-	            
-	            //if (mPreviewSize != null) {
-	            //    previewWidth = mPreviewSize.width;
-	            //    previewHeight = mPreviewSize.height;
-	            //}
+		
+		 public static void setCameraDisplayOrientation(Activity activity,
+		         int cameraId, android.hardware.Camera camera) {
+		     android.hardware.Camera.CameraInfo info =
+		             new android.hardware.Camera.CameraInfo();
+		     android.hardware.Camera.getCameraInfo(cameraId, info);
+		     int rotation = activity.getWindowManager().getDefaultDisplay()
+		             .getRotation();
+		     int degrees = 0;
+		     switch (rotation) {
+		         case Surface.ROTATION_0: degrees = 0; break;
+		         case Surface.ROTATION_90: degrees = 90; break;
+		         case Surface.ROTATION_180: degrees = 180; break;
+		         case Surface.ROTATION_270: degrees = 270; break;
+		     }
 
-	            // Center the child SurfaceView within the parent.
-	            /*if (width * previewHeight > height * previewWidth) {
-	                final int scaledChildWidth = previewWidth * height / previewHeight;
-	                child.layout((width - scaledChildWidth) / 2, 0,
-	                            (width + scaledChildWidth) / 2, height);
-	            } else {
-	                final int scaledChildHeight = previewHeight * width / previewWidth;
-	                child.layout(0, (height - scaledChildHeight) / 2,
-	                            width, (height + scaledChildHeight) / 2);
-	            }*/
-	        }
-			
-		}
+		     int result;
+		     if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+		         result = (info.orientation + degrees) % 360;
+		         result = (360 - result) % 360;  // compensate the mirror
+		     } else {  // back-facing
+		         result = (info.orientation - degrees + 360) % 360;
+		     }
+		     camera.setDisplayOrientation(result);
+		 }
 }
