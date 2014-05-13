@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.util.Log;
 import android.view.Menu;
+import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -15,7 +16,7 @@ public class MainActivity extends Activity {
 
 	public Camera mCamera;
 	private CameraPreview mPreview;
-	
+	private FaceRectView mFaceRect;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,10 +28,12 @@ public class MainActivity extends Activity {
         // Create a RelativeLayout container that will hold a SurfaceView,
         // and set it as the content of our activity.
         setContentView(R.layout.activity_main);
+        
         openBackCamera();
         mPreview = new CameraPreview(this, mCamera);
         FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
         preview.addView(mPreview);
+        
         
     }
 
@@ -82,7 +85,7 @@ public class MainActivity extends Activity {
     {
     	 Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
     	 int nCameras = Camera.getNumberOfCameras();
-    	 Toast.makeText(this.getApplicationContext(), "Number of cameras: "+nCameras, Toast.LENGTH_LONG).show();
+    	 Toast.makeText(this.getApplicationContext(), "Number of cameras: "+nCameras, Toast.LENGTH_SHORT).show();
     	 
     	 for(int id=0; id<nCameras; id++)
     	 {
