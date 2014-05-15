@@ -53,6 +53,7 @@ public class MainActivity extends Activity {
             releaseCameraAndPreview();
             mCamera = Camera.open(id);
             CameraPreview.setCameraDisplayOrientation((Activity) this, id, mCamera);
+            mPreview.setCameraID(id);
             qOpened = (mCamera != null);
         } catch (Exception e) {
             Log.e(getString(R.string.app_name), "failed to open Camera");

@@ -21,6 +21,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback, FaceDetectionListener {
 	
@@ -37,6 +38,9 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 	    
 	    boolean isPreviewRunning = false;
 		private FaceRectView mFaceRect;
+		private Context mContext;
+		
+		private int mCameraId;
 
 	    //Size mPreviewSize;
 	    //List<Size> mSupportedPreviewSizes;
@@ -51,7 +55,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 	        mHolder = getHolder();
 	        mHolder.addCallback(this);
 	        
-	        
+	        mContext = context;
 	      
 	    }
 	    
@@ -88,6 +92,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		    {           
 		        mCamera.setPreviewDisplay(mHolder);          
 		        mCamera.startPreview();
+		        mCamera.startFaceDetection();
 		        isPreviewRunning = true;
 		       
 		    }
@@ -107,6 +112,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 	                Camera.Parameters parameters = mCamera.getParameters();
 	    	        parameters.setPreviewSize(getWidth(), getHeight());
 	    	        parameters.setSceneMode(Camera.Parameters.SCENE_MODE_PORTRAIT);
+	    	        mCamera.startFaceDetection();
 	                //mCamera.setFaceDetectionListener(this);
 	            }
 	        } catch (IOException exception) {
@@ -146,7 +152,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		        // Important: Call startPreview() to start updating the preview
 		        // surface. Preview must be started before you can take a picture.
 		        mCamera.startPreview();
-		        mCamera.startFaceDetection();
+		        //mCamera.startFaceDetection();
 		    }
 		}
 		
@@ -222,15 +228,23 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		         result = (info.orientation - degrees + 360) % 360;
 		     }
 		     camera.setDisplayOrientation(result);
+		     FaceRectView view = ((FaceRectView)activity.findViewById(R.id.face_view));
+			 view.setDisplayOrientation(result);
 		 }
 
+		 
+		 public void setCameraID(int id){
+			 mCameraId = id;
+		 }
 
 		@Override
-		public void onFaceDetection(Face[] faces, Camera arg1) {
+		public void onFaceDetection(Face[] faces, Camera camera) {
 			
-
+				//Toast.makeText(mContext, "Got "+faces.length+" faces", Toast.LENGTH_SHORT).show();
+				Log.i(CameraPreview.class.getName(),"Got "+faces.length+" faces");
 				FaceRectView view = ((FaceRectView)(((Activity)getContext()).findViewById(R.id.face_view)));
 		        view.setFaces(Arrays.asList(faces));
+		        view.setCameraId(mCameraId);
 			
 			
 		}
