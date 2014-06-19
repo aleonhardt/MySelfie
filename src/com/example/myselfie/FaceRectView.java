@@ -54,14 +54,12 @@ public class FaceRectView extends View {
 
         prepareMatrix(matrix, mDisplayOrientation, getWidth(), getHeight(), mCameraId);
       
-        Log.d(TAG, "Drawing Faces - " + faces.size());
+        //Log.d(TAG, "Drawing Faces - " + faces.size());
         for (Face face : faces) {
-        	
-        	//POR QUE NAO FUNCIONA?
             rect.set(face.rect);
-            dumpRect(rect, "before");
+            //dumpRect(rect, "before");
             matrix.mapRect(rect);
-            dumpRect(rect, "after");
+            //dumpRect(rect, "after");
             canvas.drawRect(rect.left, rect.top, rect.right, rect.bottom, paint);
             
             
@@ -98,12 +96,12 @@ public class FaceRectView extends View {
 
     public static void prepareMatrix(Matrix matrix, int displayOrientation,
             int viewWidth, int viewHeight, int cameraId) {
-    	CameraInfo info = new CameraInfo();;
+    	CameraInfo info = new CameraInfo();
     	Camera.getCameraInfo(cameraId, info);
     	 // Need mirror for front camera.
-    	 boolean mirror = (info.facing == CameraInfo.CAMERA_FACING_FRONT);
+    	boolean mirror = (info.facing == CameraInfo.CAMERA_FACING_FRONT);
     	//boolean mirror = false;
-    	 matrix.setScale(mirror ? -1 : 1, 1);
+    	matrix.setScale(mirror ? -1 : 1, 1);
         matrix.postRotate(displayOrientation);
         // Camera driver coordinates range from (-1000, -1000) to (1000, 1000).
         // UI coordinates range from (0, 0) to (width, height).
