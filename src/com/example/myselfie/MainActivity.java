@@ -17,6 +17,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import android.view.Menu;
@@ -35,36 +36,44 @@ public class MainActivity extends Activity implements MediaScannerConnectionClie
 	public static final int MEDIA_TYPE_IMAGE = 1;
 	public static final int MEDIA_TYPE_VIDEO = 2;
 	
+	
 	private static String appName = "MySelfie Pictures";
 	private MediaScannerConnection scanner;
-	
+	private Context context = this;
 	private PictureCallback mPicture = new PictureCallback() {
 
-	    @Override
-	    public void onPictureTaken(byte[] data, Camera camera) {
+		@Override
+		public void onPictureTaken(byte[] data, Camera camera) {
 
-	    	String TAG = "onPictureTaken";
-	    	
-	        File pictureFile = getOutputMediaFile(MEDIA_TYPE_IMAGE);
-	        if (pictureFile == null){
-	            Log.d(TAG, "Error creating media file, check storage permissions");
-	            return;
-	        }
+			String TAG = "onPictureTaken";
 
-	        try {
-	            FileOutputStream fos = new FileOutputStream(pictureFile);
-	            fos.write(data);
-	            fos.close();
-	            Log.i(TAG, "Picture taken! " + pictureFile.getPath());
-	        } catch (FileNotFoundException e) {
-	            Log.d(TAG, "File not found: " + e.getMessage());
-	        } catch (IOException e) {
-	            Log.d(TAG, "Error accessing file: " + e.getMessage());
-	        }
-	        scanner.connect();
-	        mCamera.startPreview();
-	    }
+			File pictureFile = getOutputMediaFile(MEDIA_TYPE_IMAGE);
+			if (pictureFile == null){
+				Log.d(TAG, "Error creating media file, check storage permissions");
+				return;
+			}
+
+			
+			Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+
+			Uri contentUri = Uri.fromFile(pictureFile);
+			mediaScanIntent.setData(contentUri);
+			context.sendBroadcast(mediaScanIntent);
+			Log.i(TAG, "Picture taken! " + pictureFile.getPath());
+
+
+			mCamera.startPreview();
+		}
 	};
+	
+
+	private void galleryAddPic(String mCurrentPhotoPath) {
+	    Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+	    File f = new File(mCurrentPhotoPath);
+	    Uri contentUri = Uri.fromFile(f);
+	    mediaScanIntent.setData(contentUri);
+	    this.sendBroadcast(mediaScanIntent);
+	}
 	
 	
 
@@ -78,7 +87,7 @@ public class MainActivity extends Activity implements MediaScannerConnectionClie
 	    // To be safe, you should check that the SDCard is mounted
 	    // using Environment.getExternalStorageState() before doing this.
 
-	    File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
+	    File mediaStorageDir = new File( Environment.getExternalStoragePublicDirectory(
 	              Environment.DIRECTORY_PICTURES), appName);
 	    // This location works best if you want the created images to be shared
 	    // between applications and persist after your app has been uninstalled.
@@ -95,11 +104,15 @@ public class MainActivity extends Activity implements MediaScannerConnectionClie
 	    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss",Locale.getDefault()).format(new Date());
 	    File mediaFile;
 	    if (type == MEDIA_TYPE_IMAGE){
-	        mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-	        "IMG_"+ timeStamp + ".jpg");
-	    } else if(type == MEDIA_TYPE_VIDEO) {
-	        mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-	        "VID_"+ timeStamp + ".mp4");
+	    	String filename = "IMG_"+ timeStamp;
+	    	
+	        try {
+				mediaFile = File.createTempFile( filename, ".jpg",mediaStorageDir);
+			} catch (IOException e) {
+				mediaFile=null;
+				Log.d(appName, "failed to create the temp file");
+			}
+	    
 	    } else {
 	        return null;
 	    }
