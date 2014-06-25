@@ -53,12 +53,13 @@ public class MainActivity extends Activity implements MediaScannerConnectionClie
 				return;
 			}
 
-			
+			/*sends an intent so the media scanner adds the file to the library */
 			Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-
 			Uri contentUri = Uri.fromFile(pictureFile);
 			mediaScanIntent.setData(contentUri);
-			context.sendBroadcast(mediaScanIntent);
+			context.sendBroadcast(mediaScanIntent); 
+			
+			
 			Log.i(TAG, "Picture taken! " + pictureFile.getPath());
 
 
@@ -67,13 +68,7 @@ public class MainActivity extends Activity implements MediaScannerConnectionClie
 	};
 	
 
-	private void galleryAddPic(String mCurrentPhotoPath) {
-	    Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-	    File f = new File(mCurrentPhotoPath);
-	    Uri contentUri = Uri.fromFile(f);
-	    mediaScanIntent.setData(contentUri);
-	    this.sendBroadcast(mediaScanIntent);
-	}
+	
 	
 	
 
@@ -120,15 +115,17 @@ public class MainActivity extends Activity implements MediaScannerConnectionClie
 	    return mediaFile;
 	}
 	
+	/* important to be on key down because this happens before. and thus before the volume keys are computed. */
 	@Override
-    public boolean onKeyUp(int keyCode, KeyEvent event) {
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
     	if (keyCode == KeyEvent.KEYCODE_VOLUME_UP || keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
     		mCamera.stopFaceDetection();
             mCamera.takePicture(null, null, mPicture);
             Log.e("Main activity", "KEYCODE_VOLUME");
             return true;
         }
-        return super.onKeyUp(keyCode, event);
+    	else
+    		return super.onKeyDown(keyCode, event);
     }
 	
 	
