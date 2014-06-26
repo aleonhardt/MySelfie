@@ -4,5 +4,7 @@
     <string name="app_name">myselfie</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
+    <string name="faces">People to find:</string>
+    <string name="no_facedetection_support">This device does not support face detection</string>
 
 </resources>

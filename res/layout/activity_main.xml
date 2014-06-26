@@ -6,8 +6,7 @@
     <FrameLayout
         android:id="@+id/camera_preview"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_weight="1" >
+        android:layout_height="fill_parent" >
        
         
         </FrameLayout>
@@ -15,5 +14,11 @@
         android:id="@+id/face_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"/>
+         
+         <SeekBar
+             android:id="@+id/seekbar_faces"
+             android:layout_width="fill_parent"
+             android:layout_height="wrap_content"
+             />
     
 </RelativeLayout>

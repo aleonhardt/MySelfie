@@ -37,6 +37,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback, FaceDetectionListener {
@@ -45,6 +46,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		public static final int K_STATE_FROZEN = 1;
 		
 		private boolean isRunningFaceDetection = false;
+		public int minFacesToDetect = 0;
 		
 		public int ROTATION = 0;
 	
@@ -54,6 +56,8 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		//Matrix matrix = new Matrix();
 	    RectF rectF = new RectF();
 	    public static int mDisplayOrientation;
+	    
+	    public static int MAX_FACES;
 	    
 	    
 	    SurfaceHolder mHolder;
@@ -141,6 +145,21 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 	                Camera.Parameters parameters = mCamera.getParameters();
 	    	        parameters.setPreviewSize(getWidth(), getHeight());
 	    	        parameters.setSceneMode(Camera.Parameters.SCENE_MODE_PORTRAIT);
+	    	        
+	    	        Activity myActivity = (Activity)getContext();
+	    	        
+	    	        SeekBar sb = (SeekBar)myActivity.findViewById(R.id.seekbar_faces);
+	    	        
+	    	        switch(parameters.getMaxNumDetectedFaces()){
+	    	        case 0: Toast.makeText(getContext(), R.string.no_facedetection_support, Toast.LENGTH_LONG).show();
+	    	        		CameraPreview.MAX_FACES = 0;
+	    	        		break;
+	    	        case 1:	sb.setVisibility(View.GONE);
+	    	        		CameraPreview.MAX_FACES = 1;
+	    	        		break;
+	    	        default: sb.setMax(parameters.getMaxNumDetectedFaces());
+	    	        		CameraPreview.MAX_FACES = parameters.getMaxNumDetectedFaces();
+	    	        }
 	    	        
 	    	        startFaceDetection(mCamera);
 	                //mCamera.setFaceDetectionListener(this);
@@ -341,7 +360,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		    	    	long diff = now.getTimeInMillis() - last.getTimeInMillis();    
 						
 						Log.i("onAutoFocus", "Succesfully focused");
-						if(mFaces.length>0){
+						if(mFaces.length >= minFacesToDetect){
 							try {
 								//Only rings again if the last ring was more than a second ago
 								if(diff>1000){

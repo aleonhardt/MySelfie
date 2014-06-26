@@ -34,6 +34,8 @@ import android.view.KeyEvent;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Toast;
 
 public class MainActivity extends Activity implements MediaScannerConnectionClient {
@@ -186,9 +188,46 @@ public class MainActivity extends Activity implements MediaScannerConnectionClie
 		mPreview = new CameraPreview(this, mCamera);
 		FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
 		preview.addView(mPreview);
-
-
+		
+		setFacesBar();
 	}
+	
+	private void setFacesBar()
+	{
+		SeekBar sb = (SeekBar)findViewById(R.id.seekbar_faces);
+		
+		sb.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+			
+			Toast toast = null;
+			
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {
+				if(toast!=null){
+					toast.cancel();
+				}
+			}
+			
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
+				toast = Toast.makeText(getApplicationContext(), getResources().getString(R.string.faces)+" "+seekBar.getProgress(), Toast.LENGTH_SHORT);
+				toast.show();
+			}
+			
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress,
+					boolean fromUser) {
+				if(toast!=null){
+					toast.cancel();
+				}
+				toast = Toast.makeText(getApplicationContext(), getResources().getString(R.string.faces)+" "+progress, Toast.LENGTH_SHORT);
+				toast.show();
+				mPreview.minFacesToDetect = progress;
+				
+			}
+		});
+		
+	}
+	
 
 
 	@Override
@@ -239,7 +278,7 @@ public class MainActivity extends Activity implements MediaScannerConnectionClie
 	{
 		Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
 		int nCameras = Camera.getNumberOfCameras();
-		Toast.makeText(this.getApplicationContext(), "Number of cameras: "+nCameras, Toast.LENGTH_SHORT).show();
+		//Toast.makeText(this.getApplicationContext(), "Number of cameras: "+nCameras, Toast.LENGTH_SHORT).show();
 
 		for(int id=0; id<nCameras; id++)
 		{
