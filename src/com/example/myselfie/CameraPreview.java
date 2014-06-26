@@ -152,10 +152,10 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 	    	        
 	    	        switch(parameters.getMaxNumDetectedFaces()){
 	    	        case 0: Toast.makeText(getContext(), R.string.no_facedetection_support, Toast.LENGTH_LONG).show();
+	    	        		sb.setVisibility(View.GONE);
 	    	        		CameraPreview.MAX_FACES = 0;
 	    	        		break;
-	    	        case 1:	sb.setVisibility(View.GONE);
-	    	        		CameraPreview.MAX_FACES = 1;
+	    	        case 1:	CameraPreview.MAX_FACES = 1;
 	    	        		break;
 	    	        default: sb.setMax(parameters.getMaxNumDetectedFaces());
 	    	        		CameraPreview.MAX_FACES = parameters.getMaxNumDetectedFaces();
@@ -298,9 +298,14 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		        view.setFaces(Arrays.asList(faces));
 		        view.setCameraId(mCameraId);
 		        
+<<<<<<< HEAD
 		        if(faces.length > 0){
 		        	setFocusOnFaces();
 		        }
+=======
+		        
+		        setFocusOnFaces();
+>>>>>>> origin/master
 		        
 			
 			
@@ -352,6 +357,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 			    }
 			}
 			params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+			//params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
 			mCamera.setParameters(params);
 			mCamera.autoFocus(new Camera.AutoFocusCallback() {
 				
@@ -369,16 +375,17 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 						if(mFaces.length >= minFacesToDetect){
 							try {
 								//Only rings again if the last ring was more than a second ago
-								if(diff>1000){
+								if(diff>1500){
 								    Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 								    Ringtone r = RingtoneManager.getRingtone(mContext, notification);
 								    r.play();
+								    lastRingCheckDate = now.getTime();
 								}
 							} catch (Exception e) {
 							    e.printStackTrace();
 							}
 						}
-						lastRingCheckDate = now.getTime();
+						
 					}else{
 						Log.i("onAutoFocus", "Focus failed");
 					}
