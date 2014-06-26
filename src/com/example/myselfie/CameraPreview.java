@@ -161,6 +161,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 	    	        		CameraPreview.MAX_FACES = parameters.getMaxNumDetectedFaces();
 	    	        }
 	    	        
+	    	        
 	    	        startFaceDetection(mCamera);
 	                //mCamera.setFaceDetectionListener(this);
 	            }
@@ -300,6 +301,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		        if(faces.length > 0){
 		        	setFocusOnFaces();
 		        }
+		        
 			
 			
 		}
@@ -390,6 +392,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		private synchronized void startFaceDetection(Camera camera){
 			if(!isRunningFaceDetection){
 				camera.startFaceDetection();
+				Log.i("Face Detection", "Started Face detection");
 				isRunningFaceDetection = true;
 			}
 		}
@@ -397,6 +400,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		private synchronized void stopFaceDetection(Camera camera){
 			if(isRunningFaceDetection){
 				camera.stopFaceDetection();
+				Log.i("Face Detection", "Stopped Face detection");
 				isRunningFaceDetection = false;
 			}
 		}
