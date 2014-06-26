@@ -319,31 +319,35 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
 			    //FaceRectView.prepareMatrix(matrix, mDisplayOrientation, getWidth(), getHeight(), mCameraId);
 			      
-		        //Log.d(TAG, "Drawing Faces - " + faces.size());
-		        for (Face face : mFaces) {
-		        	if(maxFocusAreas == 0)
-		        		continue;
-		            rectF.set(face.rect);
-		            
-		            //Log.i("setFocusOnFaces",rectF.toShortString());
-		            //matrix.mapRect(rectF);
-		            
-		            //Log.i("setFocusOnFaces",rectF.toShortString());
-		            
-		            Rect rect = new Rect();
-		            rect.bottom = (int)rectF.bottom;
-		            rect.left = (int)rectF.left;
-		            rect.top = (int)rectF.top;
-		            rect.right = (int)rectF.right;
-		            
-		            //Log.i("setFocusOnFaces",rect.toShortString());
-		            
-		            focusAreas.add(new Camera.Area(rect, 500)); // set weight to 60%
-		            maxFocusAreas--;
-		            
-		            
-		        }
-		        params.setFocusAreas(focusAreas);
+			    if(mFaces.length == 0){
+			    	params.setFocusAreas(null);
+			    }else{
+			    
+			        for (Face face : mFaces) {
+			        	if(maxFocusAreas == 0)
+			        		continue;
+			            rectF.set(face.rect);
+			            
+			            //Log.i("setFocusOnFaces",rectF.toShortString());
+			            //matrix.mapRect(rectF);
+			            
+			            //Log.i("setFocusOnFaces",rectF.toShortString());
+			            
+			            Rect rect = new Rect();
+			            rect.bottom = (int)rectF.bottom;
+			            rect.left = (int)rectF.left;
+			            rect.top = (int)rectF.top;
+			            rect.right = (int)rectF.right;
+			            
+			            //Log.i("setFocusOnFaces",rect.toShortString());
+			            
+			            focusAreas.add(new Camera.Area(rect, 500)); // set weight to 60%
+			            maxFocusAreas--;
+			            
+			            
+			        }
+			        params.setFocusAreas(focusAreas);
+			    }
 			}
 			params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
 			mCamera.setParameters(params);
