@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -52,7 +53,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
 		//Matrix matrix = new Matrix();
 	    RectF rectF = new RectF();
-	    private static int mDisplayOrientation;
+	    public static int mDisplayOrientation;
 	    
 	    
 	    SurfaceHolder mHolder;
@@ -63,6 +64,8 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		private Context mContext;
 		
 		private int mCameraId;
+		
+		Date lastRingCheckDate = new Date();
 
 	    //Size mPreviewSize;
 	    //List<Size> mSupportedPreviewSizes;
@@ -330,16 +333,27 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 				@Override
 				public void onAutoFocus(boolean success, Camera camera) {
 					if(success){
+						
+						Calendar last = Calendar.getInstance();       
+		    	    	Calendar now = Calendar.getInstance();              
+		    	    	last.setTime(lastRingCheckDate);       
+		    	    	now.setTime(new Date());              
+		    	    	long diff = now.getTimeInMillis() - last.getTimeInMillis();    
+						
 						Log.i("onAutoFocus", "Succesfully focused");
 						if(mFaces.length>0){
 							try {
-							    Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-							    Ringtone r = RingtoneManager.getRingtone(mContext, notification);
-							    r.play();
+								//Only rings again if the last ring was more than a second ago
+								if(diff>1000){
+								    Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+								    Ringtone r = RingtoneManager.getRingtone(mContext, notification);
+								    r.play();
+								}
 							} catch (Exception e) {
 							    e.printStackTrace();
 							}
 						}
+						lastRingCheckDate = now.getTime();
 					}else{
 						Log.i("onAutoFocus", "Focus failed");
 					}

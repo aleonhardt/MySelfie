@@ -58,15 +58,13 @@ public class MainActivity extends Activity implements MediaScannerConnectionClie
 			File pictureFile = getOutputMediaFile(MEDIA_TYPE_IMAGE);
 			Bitmap pictureTaken = BitmapFactory.decodeByteArray(data, 0,data.length);
 
-			if(getResources().getConfiguration().orientation ==Configuration.ORIENTATION_PORTRAIT )
-			{
-				//rotation
-				Matrix matrix = new Matrix();
-				matrix.postRotate(90); // clockwise by 90 degrees
+			//rotation
+			Matrix matrix = new Matrix();
+			matrix.postRotate(CameraPreview.mDisplayOrientation); // clockwise by 90 degrees
 
-				// create a new bitmap from the original using the matrix to transform the result
-				pictureTaken = Bitmap.createBitmap(pictureTaken , 0, 0, pictureTaken.getWidth(), pictureTaken.getHeight(), matrix, true);
-			}
+			// create a new bitmap from the original using the matrix to transform the result
+			pictureTaken = Bitmap.createBitmap(pictureTaken , 0, 0, pictureTaken.getWidth(), pictureTaken.getHeight(), matrix, true);
+
 			Uri contentUri = Uri.fromFile(pictureFile);
 
 			OutputStream outputStream;
@@ -175,6 +173,8 @@ public class MainActivity extends Activity implements MediaScannerConnectionClie
 		// getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 		//    WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		
 		// Create a RelativeLayout container that will hold a SurfaceView,
 		// and set it as the content of our activity.
 		setContentView(R.layout.activity_main);
