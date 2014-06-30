@@ -72,7 +72,7 @@ public class MainActivity extends Activity implements MediaScannerConnectionClie
 			OutputStream outputStream;
 			try {
 				outputStream = getContentResolver().openOutputStream(contentUri);
-				boolean compressed = pictureTaken.compress(	Bitmap.CompressFormat.JPEG, 20, outputStream);
+				boolean compressed = pictureTaken.compress(	Bitmap.CompressFormat.JPEG, 80, outputStream);
 				Log.e(TAG, "picture successfully compressed at:" + pictureFile
 						+ compressed);
 				outputStream.close();

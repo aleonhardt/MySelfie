@@ -298,14 +298,14 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		        view.setFaces(Arrays.asList(faces));
 		        view.setCameraId(mCameraId);
 		        
-<<<<<<< HEAD
+
 		        if(faces.length > 0){
 		        	setFocusOnFaces();
 		        }
-=======
+
 		        
 		        setFocusOnFaces();
->>>>>>> origin/master
+
 		        
 			
 			
